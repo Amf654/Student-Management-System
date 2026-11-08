@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة وتحليل نتائج الطلاب</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+            padding: 35px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 12px;
+            font-size: 28px;
+        }
+
+        header p {
+            color: #dbeafe;
+            line-height: 1.8;
+        }
+
+        .section-title {
+            margin: 25px 0 15px;
+            font-size: 21px;
+            color: #172554;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0000000d;
+            border-right: 5px solid #2563eb;
+        }
+
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card p {
+            font-size: 27px;
+            font-weight: bold;
+            color: #172554;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .success {
+            color: #15803d;
+            background: #dcfce7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .mercy-section {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        .mercy-result {
+            background: #eff6ff;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 15px;
+            line-height: 2;
+        }
+
+        .mercy-result strong {
+            color: #1d4ed8;
+        }
+
+        .empty {
+            color: #64748b;
+            padding: 15px;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            header h1 {
+                font-size: 21px;
+            }
+
+            .stat-card p {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>🎓 نظام إدارة وتحليل نتائج الطلاب</h1>
+        <p>Student Management & Academic Results System</p>
+        <p>نظام إلكتروني لتحليل درجات الطلاب ومتابعة النتائج ولجنة الرأفة</p>
+    </header>
+
+    <h2 class="section-title">📊 الإحصائيات العامة</h2>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3>إجمالي الطلاب</h3>
+            <p id="totalStudents">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>عدد الناجحين</h3>
+            <p id="passedStudents">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>عدد الطلاب المحتاجين للمراجعة</h3>
+            <p id="failedStudents">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>طلاب لجنة الرأفة</h3>
+            <p id="mercyStudents">0</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">📋 تقرير نتائج الطلاب</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الجلوس</th>
+                    <th>اسم الطالب</th>
+                    <th>المادة الأولى</th>
+                    <th>المادة الثانية</th>
+                    <th>المادة الثالثة</th>
+                    <th>الحضور</th>
+                    <th>المتوسط</th>
+                    <th>التقدير</th>
+                    <th>النتيجة</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentsTable"></tbody>
+        </table>
+    </div>
+
+    <div class="mercy-section">
+        <h2>⭐ لجنة الرأفة</h2>
+        <p style="margin-top:10px;color:#64748b">
+            الطلاب الذين تتراوح متوسطاتهم الأصلية بين 40 و49،
+            مع إضافة 5 درجات رأفة إلى متوسط كل طالب.
+        </p>
+
+        <div class="table-container" style="margin-top:15px">
+            <table>
+                <thead>
+                    <tr>
+                        <th>اسم الطالب</th>
+                        <th>المتوسط الأصلي</th>
+                        <th>درجات الرأفة</th>
+                        <th>المتوسط بعد الرأفة</th>
+                    </tr>
+                </thead>
+
+                <tbody id="mercyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="mercy-result">
+            <p>عدد الطلاب المستفيدين: <strong id="mercyCount">0</strong></p>
+            <p>مجموع المتوسطات بعد الرأفة: <strong id="mercyTotal">0</strong></p>
+            <p>متوسط درجات الطلاب بعد الرأفة: <strong id="mercyAverage">0</strong></p>
+        </div>
+    </div>
+
+    <footer>
+        Student Management System © 2026
+        <br>
+        Academic Results & Analysis
+    </footer>
+
+</div>
+
+<script>
+
+// =====================================
+// 1. Student Class & Constructor
+// =====================================
+
+class Student {
+
+    constructor(id, name, grades, attendance) {
+
+        this.id = id;
+        this.name = name;
+        this.grades = grades;
+        this.attendance = attendance;
+
+    }
+
+    // =====================================
+    // 2. Calculate Average Using Reduce
+    // =====================================
+
+    calculateAverage() {
+
+        const total = this.grades.reduce((sum, grade) => {
+            return sum + grade;
+        }, 0);
+
+        return total / this.grades.length;
+
+    }
+
+    // =====================================
+    // 3. Calculate Grade Using If / Else
+    // =====================================
+
+    getGrade(average) {
+
+        if (average >= 90) {
+            return "A";
+        }
+        else if (average >= 80) {
+            return "B";
+        }
+        else if (average >= 70) {
+            return "C";
+        }
+        else if (average >= 60) {
+            return "D";
+        }
+        else if (average >= 50) {
+            return "E";
+        }
+        else {
+            return "F";
+        }
+
+    }
+
+    // =====================================
+    // 4. Final Result Using &&
+    // =====================================
+
+    getResult(average) {
+
+        if (average >= 50 && this.attendance >= 75) {
+            return "ناجح";
+        }
+        else {
+            return "يحتاج مراجعة";
+        }
+
+    }
+
+}
+
+
+// =====================================
+// 5. Create Students Objects Array
+// =====================================
+
+const studentsList = [
+
+    new Student(101, "أحمد محمد", [90, 85, 95], 95),
+
+    new Student(102, "سارة علي", [45, 48, 42], 80),
+
+    new Student(103, "محمود خالد", [70, 75, 80], 90),
+
+    new Student(104, "نور أحمد", [40, 45, 48], 70)
+
+];
+
+
+// =====================================
+// 6. Filter Students for Mercy Committee
+// =====================================
+
+const strugglingStudents = studentsList.filter(student => {
+
+    const average = student.calculateAverage();
+
+    return average >= 40 && average <= 49;
+
+});
+
+
+// =====================================
+// 7. Map: Add 5 Mercy Marks
+// =====================================
+
+const mercyStudents = strugglingStudents.map(student => {
+
+    const oldAverage = student.calculateAverage();
+
+    return {
+
+        id: student.id,
+        name: student.name,
+        oldAverage: oldAverage,
+        mercyMarks: 5,
+        newAverage: oldAverage + 5
+
+    };
+
+});
+
+
+// =====================================
+// 8. Reduce: Calculate New Total
+// =====================================
+
+const newTotal = mercyStudents.reduce((sum, student) => {
+
+    return sum + student.newAverage;
+
+}, 0);
+
+
+// =====================================
+// 9. Calculate Mercy Average
+//    Protect Against Division by Zero
+// =====================================
+
+const mercyAverage = mercyStudents.length > 0
+    ? newTotal / mercyStudents.length
+    : 0;
+
+
+// =====================================
+// 10. Display Students on Web Page
+// =====================================
+
+const studentsTable = document.getElementById("studentsTable");
+
+studentsList.forEach(student => {
+
+    const average = student.calculateAverage();
+
+    const grade = student.getGrade(average);
+
+    const result = student.getResult(average);
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${student.id}</td>
+        <td>${student.name}</td>
+        <td>${student.grades[0]}</td>
+        <td>${student.grades[1]}</td>
+        <td>${student.grades[2]}</td>
+        <td>${student.attendance}%</td>
+        <td>${average.toFixed(2)}</td>
+        <td>${grade}</td>
+        <td>
+            <span class="${result === "ناجح" ? "success" : "fail"}">
+                ${result}
+            </span>
+        </td>
+    `;
+
+    studentsTable.appendChild(row);
+
+});
+
+
+// =====================================
+// 11. Display Mercy Students
+// =====================================
+
+const mercyTable = document.getElementById("mercyTable");
+
+if (mercyStudents.length > 0) {
+
+    mercyStudents.forEach(student => {
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${student.name}</td>
+            <td>${student.oldAverage.toFixed(2)}</td>
+            <td>+${student.mercyMarks}</td>
+            <td>${student.newAverage.toFixed(2)}</td>
+        `;
+
+        mercyTable.appendChild(row);
+
+    });
+
+} else {
+
+    mercyTable.innerHTML = `
+        <tr>
+            <td colspan="4" class="empty">
+                لا يوجد طلاب مستحقون للرأفة
+            </td>
+        </tr>
+    `;
+
+}
+
+
+// =====================================
+// 12. Update Dashboard Statistics
+// =====================================
+
+const passedCount = studentsList.filter(student => {
+
+    return student.getResult(student.calculateAverage()) === "ناجح";
+
+}).length;
+
+const failedCount = studentsList.length - passedCount;
+
+document.getElementById("totalStudents").textContent =
+    studentsList.length;
+
+document.getElementById("passedStudents").textContent =
+    passedCount;
+
+document.getElementById("failedStudents").textContent =
+    failedCount;
+
+document.getElementById("mercyStudents").textContent =
+    mercyStudents.length;
+
+document.getElementById("mercyCount").textContent =
+    mercyStudents.length;
+
+document.getElementById("mercyTotal").textContent =
+    newTotal.toFixed(2);
+
+document.getElementById("mercyAverage").textContent =
+    mercyAverage.toFixed(2);
+
+
+// =====================================
+// 13. Console Reports
+// =====================================
+
+console.log("🎓 UNIVERSITY STUDENT MANAGEMENT SYSTEM");
+
+console.log("====================================");
+
+console.log("📋 STUDENTS REPORT");
+
+studentsList.forEach(student => {
+
+    const average = student.calculateAverage();
+
+    console.log({
+        ID: student.id,
+        Name: student.name,
+        Grades: student.grades,
+        Attendance: student.attendance + "%",
+        Average: average.toFixed(2),
+        Grade: student.getGrade(average),
+        Result: student.getResult(average)
+    });
+
+});
+
+console.log("====================================");
+
+console.log("⭐ MERCY COMMITTEE STUDENTS");
+
+console.table(mercyStudents);
+
+console.log("====================================");
+
+console.log("📊 MERCY ANALYSIS");
+
+console.log("Total Mercy Students:", mercyStudents.length);
+
+console.log("Total New Averages:", newTotal.toFixed(2));
+
+console.log("Average After Mercy:", mercyAverage.toFixed(2));
+
+console.log("====================================");
+
+console.log("✅ SYSTEM COMPLETED SUCCESSFULLY");
+
+</script>
+
+</body>
+</html>
